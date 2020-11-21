@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hordes</title>
+        <link rel="stylesheet" type="text/css" href="hordes.css"/>
+        <script src="hordes.js"></script>
+    </head>
+    <body onload="myCity.onLoadBody()">
+        <button onclick="UsefulFunctions.showHideDevFunctions()">SHOW/HIDE DEV FUNCTIONS</button>
+        <header>
+            <div class="Block" id="generalInformationDiv">
+                <p>day: <span id="day"></span> time: <span id="time"></span> nbZombie: <span id="nbZombie"></span> defense: <span id="defense"></span></p>
+            </div>
+        </header>
+
+        <div class="ColumnTab">
+            <div class="Column" id="Column1">
+                <div class="Block" id="selectAnActionDiv">
+                    <ul id="allActions">
+                        <h1>What do you want to do?</h1>
+                        <li><button onclick="myCity.displayBuildAction()">BUILD DEFENSES</button></li>
+                        <li><button onclick="myCity.displayUpgradeSkillsAction()">UPGRADE YOUR SKILLS</button></li>
+                        <li><button onclick="myCity.findAnItem()">SEARCH FOR RESSOUCES</button></li>
+
+                        <li><button class="devFunction" onclick="myCity.bobArrival()">A BOB ARRIVES IN THE CITY (dev function)</button></li>
+                        <li><button class="devFunction" onclick="myCity.midnightAttack()">MIDNIGHT ATTACK (dev function)</button></li>
+                        <li><button class="devFunction" onclick="myCity.takeANap()">TAKE A NAP (dev function)</button></li>
+                        <li><button class="devFunction" onclick="myCity.fullRessourcesInventory()">FULL RESSOUCES INVENTORY (dev function)</button></li>
+                        <li><button class="devFunction" onclick="myCity.fullBobs()">FULL BOBS (dev function)</button></li>
+                        <li><button class="devFunction" onclick="myCity.resetInventory()">RESET INVENTORY (dev function)</button></li>
+                        <li><button class="devFunction" onclick="myCity.resetBobs()">RESET BOBS (dev function)</button></li>  
+                    </ul>
+                </div>
+
+                <div class="Block" id="skillsDiv">
+                    <h1>Your Skills</h1>
+                    <p id="skills"></p>
+                </div>
+            </div>
+
+
+            <div class="Column" id="Column2">
+                <div class="Block" id="actionDiv">
+                    <h1>Action</h1>
+                    <p id="actionDisplay"></p>
+                </div>
+            </div>
+
+
+            <div class="Column" id="Column3">
+                <div class="Block" id="inventoryDiv">
+                    <h1>Inventory</h1>
+                    <p id="inventory"></p>
+                </div>
+
+                <div class="Block" id="bobsDiv" >
+                    <h1>Bobs</h1>
+                    <p id="bobs"></p>
+                </div>
+            </div>
+
+        </div>
+
+        <p id="test"></p>
+
+    </body>
+</html>

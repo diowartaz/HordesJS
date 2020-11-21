@@ -1,0 +1,132 @@
+ordre des choses a faire:
+faire mourir les bobs
+    proba de mourir de base de 50%
+    apres avoir fait leur actions
+
+
+modifier les fouilles
+    rejoindre la zone des fouilles 
+    rester en ville 
+
+    tableau:
+    effectuer une fouille +
+    effectuer 5 fouilles ++
+    revenir en ville 
+
+    inventaire des fouilles
+
+    probleme depassement de l heure: pas possible de clikcer si ca depasse l heure
+    boutton rouge inclikable
+
+
+
+
+
+
+feature to add:
+seconde chance (pour laisser place a plus de strategie)
+bob peuvent mourir
+
+buildings to add:
+    classic buildings
+        fausse ville
+        mur renforce
+        portes broyeuse
+        bunker
+        ravin
+        scie tournoyante
+        barbele
+        barraquement maison
+        piege a pieux
+        gros tas
+        palissade bancale
+        rempart legendaire
+
+
+    special buildings
+        support def
+        phare
+        ecole
+        muraille evolutive
+        architectoire
+        batiment de production pour chaque ressources
+        velo augmente la proba des fouilles car on peut aller plus loin de le desert
+        charette (plus d objets)
+        manufacture
+        librairie
+        maison confortable(5-23h)
+
+
+skills
+    bob manager
+    campeur fou (lvl 5 survie 1 a 5 jour de plus quand l attaque depasse la def) 
+    sprinter
+    bodybuilder (peut porter plus de ressources sur lui)
+
+
+
+rajouter des trucs qui se combine:
+quelles strategies:
+    bob
+    ameliorer plein de competence en prenant du retard pour viser le late
+
+
+
+fouille d objets: aller dans le desert avec un iventaire limite
+
+trier les buildings par temps/faisable/def/speciaux
+
+
+
+
+random listbuilding for the begining +  discover a building every 2 days
+more classic buildings
+special buildings
+
+upgrade the find ressources feature (sprinter)
+
+action des bob base sur l heure de la journee, on tire une heure pour l action, et un historique s affiche sur l'ecran 
+historique c'est cool
+
+apres:
+decouverte de batiments +
++ nouveaux batiments + leurs actions
+gerer l incrementation de zombie
+
+
+
+
+
+calcul hordes et raisonnement equilibrage
+une journee = 16h
+batiment de reference 25 def 4ressources basiques (+ 4 h)
+
+strategie bob (phare/ecole/manageur/):
+    un bob en moyenne rapporte 5/3 de def par jour pendant x jours (depend de la proba de mourir du bob)
+
+fouilles: 
+    velo boost la proba de trouver des trucs 50% a 75%
+   
+    sprinteur 1h30 -> 30 min pour rejoindre la zone des fouilles
+    fouineur  45min - 22.5min pouur une fouille
+    bodybuilder 5 -> 10 si charette +bodybuilder
+    charette 5 -> 10 si charette +bodybuilder
+
+
+    50% de chance de trouve une ressources de base, 75% si velo
+    6 places de base dans l inventaire du joueur
+
+    base
+    1h30 aller 1h30 retour 45min pour chaque fouille 
+    17 fouilles/jour 8.5 ressources/jour
+
+    avec velo
+    12.75 ressources/jour
+
+    avec tout 
+    40fouilles/jour
+    30 ressources/jour
+
+full pano champ + pano bandit
+
+
