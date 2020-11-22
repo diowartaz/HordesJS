@@ -4,11 +4,20 @@ init_day = 1;
 one_hour = 3600; //seconds
 day_start_time = one_hour*6; //the day begins at 6am
 day_end_time = one_hour*22; //the day ends at 10pm
-defaultDiggingTime = one_hour*1;
-nap_time = one_hour*3.75;
 bricoBob_defense = 5;
-maxProbabilityRessourceSaver = 0.5;
+
+//Skills
+ressourcesSaverSkillAdvantage = 0.5;
 fastLearnerSkillAdvantage = 0.5;
+sprinterSkillAdvantage = 0.5;
+diggerSkillAdvantage = 0.5;
+
+//times
+defaultDiggingTime = one_hour*1;
+defaultJoiningDiggingZoneTime = one_hour*1;
+napTime = one_hour*3.75;
+
+
 
 
 
@@ -28,6 +37,12 @@ class City{
       this.bobs = listBobs;
       this.skills = listSkills;
       this.fastLearnerSkillAdvantage = fastLearnerSkillAdvantage;
+
+      this.locationCity = true;
+
+      this.defaultDiggingTime = defaultDiggingTime;
+      this.defaultJoiningDiggingZoneTime = defaultJoiningDiggingZoneTime;
+      this.napTime = napTime;
     }
 
 
@@ -71,15 +86,23 @@ class City{
         this.bobsUpdate();
     }
 
-    getDiggingTime(){
-        return defaultDiggingTime;
+
+    getJoiningDiggingZoneTime(){
+        return JoiningDiggingZoneTime;
     }
 
     findAnItem(){
-        var itemName = UsefulFunctions.randomItem();
-        this.addItem(itemName, 1);
-        this.addTime(this.getDiggingTime());
-        return itemName;
+        if(this.locationCity){
+            var itemName = UsefulFunctions.randomItem();
+            this.addItem(itemName, 1);
+            this.addTime(this.getTimeRequiredDigging());
+        }
+        else{
+            var itemName = UsefulFunctions.randomItem();
+            this.addItem(itemName, 1);
+            this.addTime(this.getTimeRequiredDigging());
+        }
+        
     }
 
     onLoadBody(){
@@ -128,6 +151,9 @@ class City{
         this.defenseUpdate();
         this.inventoryUpdate();
         this.bobsUpdate();
+        this.displayUpgradeSkillsAction();
+        UsefulFunctions.showHideDevFunctions();
+
     }
 
     addTime(sec){
@@ -199,7 +225,7 @@ class City{
     }
 
     takeANap(){
-        this.addUselessTime(nap_time);
+        this.addUselessTime(this.napTime);
     }
 
 
@@ -265,6 +291,77 @@ class City{
         return htmlString;
     }
 
+    diggingActionToHtml(){
+        if(this.locationCity){
+            var htmlString = "<table>";
+
+            htmlString += "<tr>";
+            htmlString = htmlString + "<th>Join digging zone in the desert<th>"
+            htmlString += "<th>" + UsefulFunctions.timeToString(this.getTimeRequiredJoiningDiggingZone(this)) + "<th>";
+            htmlString += "<th><button onclick=\"myCity.changeLocation()\">+</button><th>";
+            htmlString += "</tr>";
+
+            htmlString += "<tr>";
+            htmlString = htmlString + "<th>Dig for an item in the city<th>"
+            htmlString += "<th>" + UsefulFunctions.timeToString(this.getTimeRequiredDigging(this)) + "<th>";
+            htmlString += "<th><button onclick=\"myCity.findAnItem()\">+</button><th>";
+            htmlString += "</tr>";
+
+            htmlString = htmlString + "</table>";
+        }
+        else{ // locationCity = digging zone
+            var htmlString = "<table>";
+
+            htmlString += "<tr>";
+            htmlString = htmlString + "<th>Return to the city<th>"
+            htmlString += "<th>" + UsefulFunctions.timeToString(this.getTimeRequiredJoiningDiggingZone(this)) + "<th>";
+            htmlString += "<th><button onclick=\"myCity.changeLocation()\">+</button><th>";
+            htmlString += "</tr>";
+
+            htmlString += "<tr>";
+            htmlString = htmlString + "<th>Dig for an item<th>"
+            htmlString += "<th>" + UsefulFunctions.timeToString(this.getTimeRequiredDigging(this)) + "<th>";
+            htmlString += "<th><button onclick=\"myCity.findAnItem()\">+</button><th>";
+            htmlString += "</tr>";
+
+            htmlString = htmlString + "</table>";
+        }
+        return htmlString;
+    }
+
+    getTimeRequiredJoiningDiggingZone(){
+        var sprinterSkill = UsefulFunctions.searchObjetInArray("sprinter", myCity.skills);
+        var realTimeRequired = this.defaultJoiningDiggingZoneTime*(1 - sprinterSkillAdvantage*(sprinterSkill.level/sprinterSkill.maxLevel));
+        return realTimeRequired;
+    }
+
+    getTimeRequiredDigging(){
+        var diggerSkill = UsefulFunctions.searchObjetInArray("digger", myCity.skills);
+        var realTimeRequired = this.defaultDiggingTime*(1 - diggerSkillAdvantage*(diggerSkill.level/diggerSkill.maxLevel));
+        return realTimeRequired;
+    }
+
+    changeLocation(){
+        this.locationCity = !this.locationCity;
+        this.addTime(this.getTimeRequiredJoiningDiggingZone());
+        this.displayDiggingAction();
+        if(this.locationCity){
+            var actionButtons = document.getElementsByClassName("actionButton");
+            for(let i = 0; i < actionButtons.length; i++){
+                actionButtons[i].disabled = false;
+                actionButtons[i].style.background = "transparent";
+            }
+        }
+        else{
+            var actionButtons = document.getElementsByClassName("actionButton");
+            for(let i = 0; i < actionButtons.length; i++){
+                actionButtons[i].disabled = true;
+                actionButtons[i].style.background = "rgba(163, 10, 10, 0.4)";
+            }
+        }
+    }
+
+
     bobsToHtml(){
         var htmlString = "<ul>";
         var numberOfBobs = this.bobs.length;
@@ -294,7 +391,7 @@ class City{
     }
 
     upgradeSkill(i){
-        this.skills[i].upgrade(this);;
+        this.skills[i].upgrade(this);
         this.timeUpdate();
         this.displayUpgradeSkillsAction();
     }
@@ -307,6 +404,10 @@ class City{
 
     displayUpgradeSkillsAction(){
         document.getElementById("actionDisplay").innerHTML = this.skillsActionToHtml();
+    }
+
+    displayDiggingAction(){
+        document.getElementById("actionDisplay").innerHTML = this.diggingActionToHtml();
     }
     
     build(i){ //index of the building to build
@@ -475,7 +576,7 @@ class Building{
                 var itemNb = item[1]
                 for(let i=0; i<itemNb; i++){
                     var randomNb = Math.random();
-                    if(randomNb < ressourceSaverSkill.level/ressourceSaverSkill.maxLevel*maxProbabilityRessourceSaver){
+                    if(randomNb < ressourceSaverSkill.level/ressourceSaverSkill.maxLevel*ressourcesSaverSkillAdvantage){
                         hasSavedSomething = true
                         ressourcesSaved.add(itemName, 1)
                     }
@@ -619,7 +720,6 @@ class UsefulFunctions{
             hours = hours - 12;
             timeString =  "" + hours + "h" + minutesString;
         }
-        //alert("" + time + " " + hours + " " + minutesString);
         return timeString;
     }
 
@@ -844,14 +944,20 @@ listSkills.push(builderSkill);
 name = "ressources saver";
 maxLevel = 5;
 timeRequired = 4*3600;
-ressourcesSaverSkill = new Skill(name, maxLevel, timeRequired);
-listSkills.push(ressourcesSaverSkill);
+SaverSkill = new Skill(name, maxLevel, timeRequired);
+listSkills.push(SaverSkill);
 
 name = "fast learner";
 maxLevel = 5;
 timeRequired = 4*3600;
-ressourcesFastLearner = new Skill(name, maxLevel, timeRequired);
-listSkills.push(ressourcesFastLearner);
+FastLearnerSkill = new Skill(name, maxLevel, timeRequired);
+listSkills.push(FastLearnerSkill);
+
+name = "sprinter";
+maxLevel = 5;
+timeRequired = 4*3600;
+sprinterSkill = new Skill(name, maxLevel, timeRequired);
+listSkills.push(sprinterSkill);
 
 
 listBobs = [];
@@ -859,7 +965,7 @@ listBobs.push(new DiggerBob(0))
 listBobs.push(new BricoBob(0))
 listBobs.push(new StupidBob(0))
 
-var hidden = true;
+var hidden = false;
 var myCity = new City();
 console.log(myCity)
 
