@@ -1,17 +1,21 @@
+bien affiché les skills (tableau comme celui des buildings: name lvl lvl_max)
+quand on fouille faut que ca update tableau buildings (faire le syst de fouille)
+fin du jeu quand on meurt il faut que ca restart
+
 ordre des choses a faire:
 faire mourir les bobs
     proba de mourir de base de 50%
-    apres avoir fait leur actions
+    avant avoir fait leur actions
 
 
 modifier les fouilles
-    rejoindre la zone des fouilles 
+    rejoindre la zone des fouilles (tps(sprinteur)) -> bloquer les boutons des actions
     rester en ville 
 
     tableau:
-    effectuer une fouille +
-    effectuer 5 fouilles ++
-    revenir en ville 
+    effectuer une fouille + (temps(fouineur))
+    effectuer 5 fouilles ++ (temps(fouineur))
+    revenir en ville  (temps)
 
     inventaire des fouilles
 
@@ -25,7 +29,7 @@ modifier les fouilles
 
 feature to add:
 seconde chance (pour laisser place a plus de strategie)
-bob peuvent mourir
+
 
 buildings to add:
     classic buildings

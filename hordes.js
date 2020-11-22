@@ -7,7 +7,8 @@ day_end_time = one_hour*22; //the day ends at 10pm
 defaultDiggingTime = one_hour*1;
 nap_time = one_hour*3.75;
 bricoBob_defense = 5;
-maxProbabilityRessourceSaver = 0.5
+maxProbabilityRessourceSaver = 0.5;
+fastLearnerSkillAdvantage = 0.5;
 
 
 
@@ -26,6 +27,7 @@ class City{
 
       this.bobs = listBobs;
       this.skills = listSkills;
+      this.fastLearnerSkillAdvantage = fastLearnerSkillAdvantage;
     }
 
 
@@ -125,7 +127,6 @@ class City{
         this.nbZombieUpdate();
         this.defenseUpdate();
         this.inventoryUpdate();
-        this.skillsUpdate();
         this.bobsUpdate();
     }
 
@@ -200,6 +201,7 @@ class City{
     takeANap(){
         this.addUselessTime(nap_time);
     }
+
 
     buildingsActionToHtml(){
         var htmlString = "<table>";
@@ -294,13 +296,10 @@ class City{
     upgradeSkill(i){
         this.skills[i].upgrade(this);;
         this.timeUpdate();
-        this.skillsUpdate();
         this.displayUpgradeSkillsAction();
     }
     
-    skillsUpdate(){
-        document.getElementById("skills").innerHTML = this.skillsToHtml();
-    }
+    
 
     displayBuildAction(){
         document.getElementById("actionDisplay").innerHTML = this.buildingsActionToHtml();
@@ -694,7 +693,7 @@ class Skill {
 
     getTimeRequired(myCity){
         var fastLearnerSkill = UsefulFunctions.searchObjetInArray("fast learner", myCity.skills);
-        var realTimeRequired = this.timeRequired - 0.5*this.timeRequired*(fastLearnerSkill.level/fastLearnerSkill.maxLevel);
+        var realTimeRequired = this.timeRequired - myCity.fastLearnerSkillAdvantage*this.timeRequired*(fastLearnerSkill.level/fastLearnerSkill.maxLevel);
         return realTimeRequired;
     }
 }
@@ -860,13 +859,7 @@ listBobs.push(new DiggerBob(0))
 listBobs.push(new BricoBob(0))
 listBobs.push(new StupidBob(0))
 
-
-// for(let i=0; i<20; i++){
-//     console.log(UsefulFunctions.randomBob());
-// }
-
-
-var hidden = false;
+var hidden = true;
 var myCity = new City();
 console.log(myCity)
 

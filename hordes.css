@@ -12,12 +12,19 @@ li{
 .Block{
     border-style: double;
     border-radius:6px;
-    font-family: Arial, Helvetica, sans-serif;
+    /*font-family: Arial, Helvetica, sans-serif; useless*/
     margin: 10px;
+    padding: 6px;
+    background-color: rgba(0, 0, 0, 0.5); /* 0.5 - semi-transparent */
+    
 }
 
 button:hover {
     background: rgb(89, 214, 89);
+}
+button{
+    background: transparent;
+    color: aliceblue;
 }
 
 .ColumnTab{
@@ -26,9 +33,15 @@ button:hover {
     margin: 10px;
 }
 body{
-    font-size: 10px;
+    font-size: 15px;
+    color: aliceblue;
+    background-image: url('background_image.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    font-weight: bold;
 }
 
 h1{
-    font-size: 15px;
+    font-size: 20px;
 }
