@@ -1,35 +1,4 @@
-bien affiché les skills (tableau comme celui des buildings: name lvl lvl_max)
-quand on fouille faut que ca update tableau buildings (faire le syst de fouille)
-fin du jeu quand on meurt il faut que ca restart
-
-ordre des choses a faire:
-faire mourir les bobs
-    proba de mourir de base de 50%
-    avant avoir fait leur actions
-
-
-modifier les fouilles
-    rejoindre la zone des fouilles (tps(sprinteur)) -> bloquer les boutons des actions
-    rester en ville 
-
-    tableau:
-    effectuer une fouille + (temps(fouineur))
-    effectuer 5 fouilles ++ (temps(fouineur))
-    revenir en ville  (temps)
-
-    inventaire des fouilles
-
-    probleme depassement de l heure: pas possible de clikcer si ca depasse l heure
-    boutton rouge inclikable
-
-
-
-
-
-
-feature to add:
-seconde chance (pour laisser place a plus de strategie)
-
+refaire les alert pour les pop up ( c'est degueux)
 
 buildings to add:
     classic buildings
@@ -61,10 +30,13 @@ buildings to add:
         maison confortable(5-23h)
 
 
+faire mourir les bobs
+    proba de mourir de base de 50%
+    avant avoir fait leur actions
+
 skills
     bob manager
     campeur fou (lvl 5 survie 1 a 5 jour de plus quand l attaque depasse la def) 
-    sprinter
     bodybuilder (peut porter plus de ressources sur lui)
 
 
@@ -130,7 +102,5 @@ fouilles:
     avec tout 
     40fouilles/jour
     30 ressources/jour
-
-full pano champ + pano bandit
 
 

@@ -112,9 +112,24 @@ class City{
 
     timeUpdate(){
         var timeString;
+        var timeDisplay = document.getElementById("time");
+        var attentionDisplays = document.getElementsByClassName("attentionTime");
+
+        if(day_end_time - 2*one_hour < this.time){
+            for(let i = 0; i < attentionDisplays.length; i++){
+                attentionDisplays[i].innerHTML = " /!\\ ";
+                attentionDisplays[i].style.color = "red";
+            }
+        }
+        else{
+            for(let i = 0; i < attentionDisplays.length; i++){
+                attentionDisplays[i].innerHTML = "";
+                attentionDisplays[i].style.color = "aliceblue";
+            }
+        }
         if(this.time < day_end_time){
             timeString = UsefulFunctions.dayTimeToString(this.time);
-            document.getElementById("time").innerHTML = timeString;
+            timeDisplay.innerHTML = timeString;
         }
         else{
             this.midnightAttack();
@@ -130,15 +145,40 @@ class City{
         document.getElementById("day").innerHTML = this.day;
     }
     nbZombieUpdate(){
-        document.getElementById("nbZombie").innerHTML = this.nbZombie;
+        this.defenseZombieUpdate();
     }
+
+    defenseUpdate(){
+        this.defenseZombieUpdate();
+    }
+
+    defenseZombieUpdate(){
+        var defenseZombieDisplay = document.getElementsByClassName("defenseZombieDisplay");
+        var infSupDisplay = document.getElementById("infSup");
+        var attentionDisplays = document.getElementsByClassName("attentionZombie");
+        document.getElementById("nbZombie").innerHTML = this.nbZombie;
+        document.getElementById("defense").innerHTML = this.defense;
+
+        if(this.nbZombie > this.defense){
+            infSupDisplay.innerHTML = " < ";
+            for(let i = 0; i < attentionDisplays.length; i++){
+                attentionDisplays[i].innerHTML = " /!\\ ";
+                attentionDisplays[i].style.color = "red";
+            }
+        }
+        else{
+            infSupDisplay.innerHTML = " >= ";
+            for(let i = 0; i < attentionDisplays.length; i++){
+                attentionDisplays[i].innerHTML = "";
+                attentionDisplays[i].style.color = "aliceblue";
+            }
+        }
+    }
+
     inventoryUpdate(){
         document.getElementById("inventory").innerHTML = this.inventory.toHtml();
     }
 
-    defenseUpdate(){
-        document.getElementById("defense").innerHTML = this.defense;
-    }
     bobsUpdate(){
         document.getElementById("bobs").innerHTML = this.bobsToHtml();
     }
@@ -208,6 +248,7 @@ class City{
         alert("The attack is happening! \ndefense = " + this.defense + "\nnbZombie = " + this.nbZombie + "\nday efficacity = " + efficacity + "%");
         if(this.nbZombie > this.defense){
             alert("You haven't survived... \nYour score: day " + this.day);
+            window.location.href="gameLostHordes.html";
         }
         else{
             alert("You survived");
@@ -547,19 +588,15 @@ class City{
 }
 
 class Building{
-    constructor(name, defense, maxLevel, ressourcesRequired, timeRequired, actionFonction){
+    constructor(name, defense, maxLevel, ressourcesRequired, timeRequired, actionFunction){
         this.name = name;
         this.defense = defense;
         this.level = 0;
         this.maxLevel = maxLevel;
         this.ressourcesRequired = ressourcesRequired;
         this.timeRequired = timeRequired;
-        this.actionFonction = actionFonction;
+        this.actionFunction = actionFunction;
         this.isDiscovered = true;
-    }
-
-    action(myCity){
-        actionFonction(myCity);
     }
 
     build(myCity){
@@ -590,6 +627,7 @@ class Building{
             //end ressource saver skill
             myCity.addTime(this.getTimeRequired(myCity));
             myCity.addDefense(this.getDefense(myCity));
+            this.actionFunction(myCity);
             myCity.inventoryUpdate();
             myCity.displayBuildAction();
         }
@@ -878,8 +916,14 @@ class StupidBob extends Bob{
 
 
 
-
+///////////////////////////////// Buildings /////////////////////////////////////////
 listBuildings = []
+var noActionFunction = function (myCity){};
+
+/*var actionFunction = function (myCity){
+    myCity.addDefense(666)
+    alert("ajout de " + 666 + " de def");
+};*/
 
 //palisade
 name = "palisade";
@@ -890,8 +934,7 @@ ressourcesRequiredPalisade.add("wood", 2);
 ressourcesRequiredPalisade.add("metal", 3);
 ressourcesRequiredPalisade.add("screw", 1);
 timeRequired = 3600*2;
-actionFonction = undefined;
-palisade = new Building(name, defense, maxLevel, ressourcesRequiredPalisade, timeRequired, actionFonction);
+palisade = new Building(name, defense, maxLevel, ressourcesRequiredPalisade, timeRequired, noActionFunction);
 listBuildings.push(palisade);
 
 //huge pit
@@ -900,8 +943,7 @@ defense = 15;
 maxLevel = 4;
 ressourcesRequiredHugePit = new Inventory();
 timeRequired = 3600*5;
-actionFonction = undefined;
-hugePit = new Building(name, defense, maxLevel, ressourcesRequiredHugePit, timeRequired, actionFonction);
+hugePit = new Building(name, defense, maxLevel, ressourcesRequiredHugePit, timeRequired, noActionFunction);
 listBuildings.push(hugePit);
 
 //giant wall
@@ -913,11 +955,10 @@ ressourcesRequiredGiantWall.add("wood", 5);
 ressourcesRequiredGiantWall.add("metal", 5);
 ressourcesRequiredGiantWall.add("screw", 2);
 timeRequired = 3600*3;
-actionFonction = undefined;
-giantWall = new Building(name, defense, maxLevel, ressourcesRequiredGiantWall, timeRequired, actionFonction);
+giantWall = new Building(name, defense, maxLevel, ressourcesRequiredGiantWall, timeRequired, noActionFunction);
 listBuildings.push(giantWall);
 
-
+///////////////////////////////// Buildings End /////////////////////////////////////////
 
 //city inventory
 ressources = new Inventory();
@@ -967,5 +1008,4 @@ listBobs.push(new StupidBob(0))
 
 var hidden = false;
 var myCity = new City();
-console.log(myCity)
 
