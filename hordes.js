@@ -29,6 +29,9 @@ class City{
 
       this.inventory = ressources;
       this.buildings = listBuildings;
+      this.buildingsArchitect = listBuildingsArchitect;
+      this.listAllBuildings = listAllBuildings;
+
 
       this.day = init_day;
       this.time = day_start_time; //seconds (6:00 am)
@@ -36,7 +39,8 @@ class City{
 
       this.bobs = listBobs;
       this.skills = listSkills;
-      this.fastLearnerSkillAdvantage = fastLearnerSkillAdvantage;
+      this.skillsLibrary = listSkillsLibrary;
+      this.listAllSkills = listAllSkills;
 
       this.locationCity = true;
 
@@ -237,32 +241,38 @@ class City{
 
     midnightAttack(){
         //bob actions
-        var stringActionBobs = "Bob actions during the day:\n";
-        for(let i = 0; i < this.bobs.length; i++){
-            var stringActionResult = this.bobs[i].action(this);
-            stringActionBobs += stringActionResult + "\n"
-        }
-        alert(stringActionBobs)
+        if(this.locationCity){
+            var stringActionBobs = "Bob actions during the day:\n";
+            for(let i = 0; i < this.bobs.length; i++){
+                var stringActionResult = this.bobs[i].action(this);
+                stringActionBobs += stringActionResult + "\n"
+            }
+            alert(stringActionBobs)
 
-        var efficacity = Math.trunc((this.effectiveTime / (day_end_time - day_start_time))*100)
-        alert("The attack is happening! \ndefense = " + this.defense + "\nnbZombie = " + this.nbZombie + "\nday efficacity = " + efficacity + "%");
-        if(this.nbZombie > this.defense){
-            alert("You haven't survived... \nYour score: day " + this.day);
+            var efficacity = Math.trunc((this.effectiveTime / (day_end_time - day_start_time))*100)
+            alert("The attack is happening! \ndefense = " + this.defense + "\nnbZombie = " + this.nbZombie + "\nday efficacity = " + efficacity + "%");
+            if(this.nbZombie > this.defense){
+                alert("You haven't survived... \nYour score: day " + this.day);
+                window.location.href="gameLostHordes.html";
+            }
+            else{
+                alert("You survived");
+            }
+            //Updates for the next day
+            this.addDay(1);
+            this.resetTime();
+            var nbZombieToAdd = this.nbZombieToAdd();
+            this.addZombie(nbZombieToAdd);
+
+            var bobNumber = UsefulFunctions.getRandomIntInclusive(0,2);
+            this.bobs[bobNumber].add(1);
+            this.bobsUpdate();
+            alert("A new bob arrived in your city: " + this.bobs[bobNumber].name)
+        }
+        else{//night in the desert
+            alert("You haven't survived.\nWho thought that spending a night in the desert full of zombies was dangerous?\nWhat a mistake!\nYou survived the first " + this.day + " day(s).");
             window.location.href="gameLostHordes.html";
         }
-        else{
-            alert("You survived");
-        }
-        //Updates for the next day
-        this.addDay(1);
-        this.resetTime();
-        var nbZombieToAdd = this.nbZombieToAdd();
-        this.addZombie(nbZombieToAdd);
-
-        var bobNumber = UsefulFunctions.getRandomIntInclusive(0,2);
-        this.bobs[bobNumber].add(1);
-        this.bobsUpdate();
-        alert("A new bob arrived in your city: " + this.bobs[bobNumber].name)
     }
 
     takeANap(){
@@ -371,13 +381,13 @@ class City{
     }
 
     getTimeRequiredJoiningDiggingZone(){
-        var sprinterSkill = UsefulFunctions.searchObjetInArray("sprinter", myCity.skills);
+        var sprinterSkill = UsefulFunctions.searchObjetInArray("sprinter", myCity.skills, myCity.listAllSkills);
         var realTimeRequired = this.defaultJoiningDiggingZoneTime*(1 - sprinterSkillAdvantage*(sprinterSkill.level/sprinterSkill.maxLevel));
         return realTimeRequired;
     }
 
     getTimeRequiredDigging(){
-        var diggerSkill = UsefulFunctions.searchObjetInArray("digger", myCity.skills);
+        var diggerSkill = UsefulFunctions.searchObjetInArray("digger", myCity.skills, myCity.listAllSkills);
         var realTimeRequired = this.defaultDiggingTime*(1 - diggerSkillAdvantage*(diggerSkill.level/diggerSkill.maxLevel));
         return realTimeRequired;
     }
@@ -415,7 +425,7 @@ class City{
     }
 
     addBob(bobName, nb){
-        var bob = UsefulFunctions.searchObjetInArray(bobName, this.bobs);
+        var bob = UsefulFunctions.searchObjetInArray(bobName, this.bobs, []);
         bob.add(1);
     }
 
@@ -604,7 +614,7 @@ class Building{
             this.level++;
             myCity.inventory.minus(this.ressourcesRequired);
             //ressources saver skill
-            var ressourceSaverSkill = UsefulFunctions.searchObjetInArray("ressources saver", myCity.skills);
+            var ressourceSaverSkill = UsefulFunctions.searchObjetInArray("ressources saver", myCity.skills, myCity.listAllSkills);
             var ressourcesSaved = new Inventory();
             var iterator1 = this.ressourcesRequired.dictionary.entries();
             var hasSavedSomething = false
@@ -652,7 +662,7 @@ class Building{
     }
 
     getTimeRequired(myCity){
-        var builderSkill = UsefulFunctions.searchObjetInArray("builder", myCity.skills);
+        var builderSkill = UsefulFunctions.searchObjetInArray("builder", myCity.skills, myCity.listAllSkills);
         var realTimeRequired = this.timeRequired - 0.5*this.timeRequired*(builderSkill.level/builderSkill.maxLevel);
         return realTimeRequired;
     }
@@ -665,9 +675,9 @@ class Building{
 class UsefulFunctions{
     static allRessourcesRequiredBuildings(){
         var allRessourcesInventory = new Inventory();
-        var numberOfBuildings = listBuildings.length;
+        var numberOfBuildings = listAllBuildings.length;
         for(let i = 0; i < numberOfBuildings; i++){
-            var building = listBuildings[i];
+            var building = listAllBuildings[i];
             allRessourcesInventory.addInventory(building.ressourcesRequired);
         }
         return allRessourcesInventory;
@@ -774,7 +784,7 @@ class UsefulFunctions{
         }
     }
 
-    static searchObjetInArray(objetName, array){
+    static searchObjetInArray(objetName, array, secondArray){
         var lenArray = array.length;
         for(let i = 0; i < lenArray; i++){
             var objet = array[i];
@@ -782,8 +792,9 @@ class UsefulFunctions{
                 return objet;
             }
         }
-        alert("bug: objet not in array");
+        return this.searchObjetInArray(objetName, secondArray, []);
     }
+
 
     static showHideDevFunctions(){
         hidden = !hidden;
@@ -830,8 +841,8 @@ class Skill {
     }
 
     getTimeRequired(myCity){
-        var fastLearnerSkill = UsefulFunctions.searchObjetInArray("fast learner", myCity.skills);
-        var realTimeRequired = this.timeRequired - myCity.fastLearnerSkillAdvantage*this.timeRequired*(fastLearnerSkill.level/fastLearnerSkill.maxLevel);
+        var fastLearnerSkill = UsefulFunctions.searchObjetInArray("fast learner", myCity.skills, myCity.listAllSkills);
+        var realTimeRequired = this.timeRequired - fastLearnerSkillAdvantage*this.timeRequired*(fastLearnerSkill.level/fastLearnerSkill.maxLevel);
         return realTimeRequired;
     }
 }
@@ -917,7 +928,10 @@ class StupidBob extends Bob{
 
 
 ///////////////////////////////// Buildings /////////////////////////////////////////
+// screw - metal - wood - cement bag - adhesive patch - engine - wire mesh
+
 listBuildings = []
+listBuildingsArchitect = []
 var noActionFunction = function (myCity){};
 
 /*var actionFunction = function (myCity){
@@ -925,38 +939,114 @@ var noActionFunction = function (myCity){};
     alert("ajout de " + 666 + " de def");
 };*/
 
-//palisade
+//palisade (cout=8 ratio=25/8)
 name = "palisade";
 defense = 25;
 maxLevel = 3;
-ressourcesRequiredPalisade = new Inventory();
-ressourcesRequiredPalisade.add("wood", 2);
-ressourcesRequiredPalisade.add("metal", 3);
-ressourcesRequiredPalisade.add("screw", 1);
-timeRequired = 3600*2;
-palisade = new Building(name, defense, maxLevel, ressourcesRequiredPalisade, timeRequired, noActionFunction);
-listBuildings.push(palisade);
+ressourcesRequired = new Inventory();
+ressourcesRequired.add("wood", 2);
+ressourcesRequired.add("metal", 3);
+ressourcesRequired.add("screw", 1);
+timeRequired = one_hour*2;
+building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
+listBuildingsArchitect.push(building);
 
-//huge pit
+//huge pit (cout=5 ratio=15/5)
 name = "huge pit";
 defense = 15;
 maxLevel = 4;
-ressourcesRequiredHugePit = new Inventory();
-timeRequired = 3600*5;
-hugePit = new Building(name, defense, maxLevel, ressourcesRequiredHugePit, timeRequired, noActionFunction);
-listBuildings.push(hugePit);
+ressourcesRequired = new Inventory();
+timeRequired = one_hour*5;
+building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
+listBuildingsArchitect.push(building);
 
-//giant wall
+//giant wall (cout=15 ratio=40/15)
 name = "giant wall";
 defense = 40;
 maxLevel = 2;
-ressourcesRequiredGiantWall = new Inventory();
-ressourcesRequiredGiantWall.add("wood", 5);
-ressourcesRequiredGiantWall.add("metal", 5);
-ressourcesRequiredGiantWall.add("screw", 2);
-timeRequired = 3600*3;
-giantWall = new Building(name, defense, maxLevel, ressourcesRequiredGiantWall, timeRequired, noActionFunction);
-listBuildings.push(giantWall);
+ressourcesRequired = new Inventory();
+ressourcesRequired.add("wood", 5);
+ressourcesRequired.add("metal", 5);
+ressourcesRequired.add("cement bag", 2);
+timeRequired = one_hour*3;
+building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
+listBuildingsArchitect.push(building);
+
+//renforced wall (cout=13 ratio=45/13)
+name = "renforced wall";
+defense = 45;
+maxLevel = 3;
+ressourcesRequired = new Inventory();
+ressourcesRequired.add("metal", 3);
+ressourcesRequired.add("cement bag", 4);
+ressourcesRequired.add("wire mesh", 2);
+timeRequired = one_hour*4;
+building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
+listBuildingsArchitect.push(building);
+
+//spinning saw (cout=14 ratio=50/14)
+name = "spinning saw";
+defense = 50;
+maxLevel = 2;
+ressourcesRequired = new Inventory();
+ressourcesRequired.add("screw", 2);
+ressourcesRequired.add("cement bag", 4);
+ressourcesRequired.add("adhesive patch", 1);
+ressourcesRequired.add("engine", 1);
+timeRequired = one_hour*6;
+building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
+listBuildingsArchitect.push(building);
+
+//barricade (cout=4 ratio=10/4)
+name = "barricade";
+defense = 10;
+maxLevel = 5;
+ressourcesRequired = new Inventory();
+ressourcesRequired.add("metal", 1);
+ressourcesRequired.add("wood", 2);
+
+timeRequired = one_hour*1;
+building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
+listBuildingsArchitect.push(building);
+
+//barbed wire (cout=4 ratio=10/3.5)
+name = "barbed wire";
+defense = 10;
+maxLevel = 5;
+ressourcesRequired = new Inventory();
+ressourcesRequired.add("metal", 2);
+ressourcesRequired.add("wire mesh", 1);
+timeRequired = one_hour*0.5;
+building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
+listBuildingsArchitect.push(building);
+
+//architect shelter
+name = "architect shelter";
+defense = 0;
+maxLevel = 1;
+ressourcesRequired = new Inventory();
+ressourcesRequired.add("metal", 2);
+ressourcesRequired.add("wood", 2);
+ressourcesRequired.add("screw", 2);
+timeRequired = one_hour*4;
+building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
+listBuildings.push(building);
+
+//quiet place
+name = "quiet place";
+defense = 0;
+maxLevel = 1;
+ressourcesRequired = new Inventory();
+ressourcesRequired.add("cement bag", 2);
+ressourcesRequired.add("wood", 2);
+ressourcesRequired.add("screw", 2);
+timeRequired = one_hour*4;
+building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
+listBuildings.push(building);
+
+listAllBuildings = listBuildings.concat(listBuildingsArchitect);
+
+
 
 ///////////////////////////////// Buildings End /////////////////////////////////////////
 
@@ -969,36 +1059,39 @@ ressources.add("screw", 0);
 
 //listSkills
 listSkills = [];
+listSkillsLibrary = []
 
 name = "digger";
 maxLevel = 5;
 timeRequired = 4*3600;
 diggerSkill = new Skill(name, maxLevel, timeRequired);
-listSkills.push(diggerSkill);
+listSkillsLibrary.push(diggerSkill);
 
 name = "builder";
 maxLevel = 5;
 timeRequired = 4*3600;
 builderSkill = new Skill(name, maxLevel, timeRequired);
-listSkills.push(builderSkill);
+listSkillsLibrary.push(builderSkill);
 
 name = "ressources saver";
 maxLevel = 5;
 timeRequired = 4*3600;
 SaverSkill = new Skill(name, maxLevel, timeRequired);
-listSkills.push(SaverSkill);
+listSkillsLibrary.push(SaverSkill);
 
 name = "fast learner";
 maxLevel = 5;
 timeRequired = 4*3600;
 FastLearnerSkill = new Skill(name, maxLevel, timeRequired);
-listSkills.push(FastLearnerSkill);
+listSkillsLibrary.push(FastLearnerSkill);
 
 name = "sprinter";
 maxLevel = 5;
 timeRequired = 4*3600;
 sprinterSkill = new Skill(name, maxLevel, timeRequired);
-listSkills.push(sprinterSkill);
+listSkillsLibrary.push(sprinterSkill);
+
+listAllSkills = listSkillsLibrary.concat(listSkills);
 
 
 listBobs = [];
