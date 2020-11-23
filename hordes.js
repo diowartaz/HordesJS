@@ -35,7 +35,10 @@ class City{
 
 
       this.day = init_day;
-      this.time = day_start_time; //seconds (6:00 am)
+      this.day_end_time = day_end_time;
+      this.day_start_time = day_start_time;
+      this.time = this.day_start_time; //seconds (6:00 am)
+
       this.effectiveTime = 0;
 
       this.bobs = listBobs;
@@ -120,7 +123,7 @@ class City{
         var timeDisplay = document.getElementById("time");
         var attentionDisplays = document.getElementsByClassName("attentionTime");
 
-        if(day_end_time - 2*one_hour < this.time){
+        if(this.day_end_time - 2*one_hour < this.time){
             for(let i = 0; i < attentionDisplays.length; i++){
                 attentionDisplays[i].innerHTML = " /!\\ ";
                 attentionDisplays[i].style.color = "red";
@@ -132,7 +135,7 @@ class City{
                 attentionDisplays[i].style.color = "aliceblue";
             }
         }
-        if(this.time < day_end_time){
+        if(this.time < this.day_end_time){
             timeString = UsefulFunctions.dayTimeToString(this.time);
             timeDisplay.innerHTML = timeString;
         }
@@ -232,7 +235,7 @@ class City{
     }
 
     resetTime(){
-        this.time = day_start_time;
+        this.time = this.day_start_time;
         this.effectiveTime = 0;
         this.timeUpdate();
     }
@@ -250,7 +253,7 @@ class City{
             }
             alert(stringActionBobs)
 
-            var efficacity = Math.trunc((this.effectiveTime / (day_end_time - day_start_time))*100)
+            var efficacity = Math.trunc((this.effectiveTime / (this.day_end_time - this.day_start_time))*100)
             alert("The attack is happening! \ndefense = " + this.defense + "\nnbZombie = " + this.nbZombie + "\nday efficacity = " + efficacity + "%");
             if(this.nbZombie > this.defense){
                 alert("You haven't survived... \nYour score: day " + this.day);
@@ -512,6 +515,11 @@ class City{
             } 
         }   
         return additionString;
+    }
+
+    upgradeCozyHouse(){
+        this.day_start_time = this.day_start_time - one_hour*0.5;
+        this.day_end_time = this.day_end_time + one_hour*0.5;
     }
 }
 
@@ -1075,7 +1083,7 @@ timeRequired = one_hour*0.5;
 building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
 listBuildingsArchitect.push(building);
 
-//architect shelter
+//architect shelter (cout=10)
 name = "architect shelter";
 defense = 0;
 maxLevel = 1;
@@ -1087,7 +1095,7 @@ timeRequired = one_hour*4;
 building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
 listBuildings.push(building);
 
-//quiet place
+//quiet place (cout=10)
 name = "quiet place";
 defense = 0;
 maxLevel = 1;
@@ -1095,9 +1103,28 @@ ressourcesRequired = new Inventory();
 ressourcesRequired.add("cement bag", 2);
 ressourcesRequired.add("wood", 2);
 ressourcesRequired.add("screw", 2);
-timeRequired = one_hour*4;
+timeRequired = one_hour*3.5;
 building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
 listBuildings.push(building);
+
+//cozy house (cout=10)
+name = "cozy house";
+defense = 0;
+maxLevel = 3;
+ressourcesRequired = new Inventory();
+ressourcesRequired.add("cement bag", 2);
+ressourcesRequired.add("wood", 2);
+ressourcesRequired.add("screw", 2);
+timeRequired = one_hour*4.5;
+
+var actionFunction = function (myCity){
+    myCity.upgradeCozyHouse();
+};
+building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, actionFunction);
+listBuildings.push(building);
+
+
+
 
 listAllBuildings = listBuildings.concat(listBuildingsArchitect);
 
