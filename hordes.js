@@ -31,6 +31,7 @@ class City{
       this.buildings = listBuildings;
       this.buildingsArchitect = listBuildingsArchitect;
       this.listAllBuildings = listAllBuildings;
+      this.discoveryArchitect(3, 1, false);
 
 
       this.day = init_day;
@@ -41,6 +42,7 @@ class City{
       this.skills = listSkills;
       this.skillsLibrary = listSkillsLibrary;
       this.listAllSkills = listAllSkills;
+      this.discoveryLibrary(2, 1, false);
 
       this.locationCity = true;
 
@@ -52,9 +54,8 @@ class City{
 
     fullRessourcesInventory(){
         var cheatInventory = new Inventory();
-        cheatInventory.add("wood", 100);
-        cheatInventory.add("metal", 100);
-        cheatInventory.add("screw", 100);
+        cheatInventory.addInventory(this.inventory)
+        cheatInventory.cheat(100);
 
         this.inventory = cheatInventory;
         this.inventoryUpdate();
@@ -268,6 +269,8 @@ class City{
             this.bobs[bobNumber].add(1);
             this.bobsUpdate();
             alert("A new bob arrived in your city: " + this.bobs[bobNumber].name)
+            this.midnightDiscoveryArchitect(1, 1, true);
+            this.midnightDiscoveryLibrary(1, 1, true);
         }
         else{//night in the desert
             alert("You haven't survived.\nWho thought that spending a night in the desert full of zombies was dangerous?\nWhat a mistake!\nYou survived the first " + this.day + " day(s).");
@@ -470,9 +473,49 @@ class City{
         this.addBob(bobname, 1);
         myCity.bobsUpdate();
     }
-  }
 
-  class Inventory{
+    midnightDiscoveryArchitect(nb, proba, alertYes){
+        if(UsefulFunctions.searchObjetInArray("architect shelter", this.buildings, []).level == 1){
+            this.discoveryArchitect(nb, proba, alertYes);
+        }
+    }
+    midnightDiscoveryLibrary(nb, proba, alertYes){
+        if(UsefulFunctions.searchObjetInArray("quiet place", this.buildings, []).level == 1){
+            this.discoveryLibrary(nb, proba, alertYes);
+        }
+    }
+
+    discoveryArchitect(nb, proba, alertYes){
+
+        var additionString = this.itemTransferBetweenTwoArrays(this.buildingsArchitect, this.buildings, nb, proba)
+        if(alertYes){
+            alert("You are a genius! You manage to create a blueprint which can be really usefull for the defenses\n" + additionString);
+        }
+    }
+
+    discoveryLibrary(nb, proba, alertYes){
+        var additionString = this.itemTransferBetweenTwoArrays(this.skillsLibrary, this.skills, nb, proba)
+        if(alertYes){
+            alert("You discovered some books with which you could learn some new usefull skills!\n" + additionString);
+        }
+    }
+
+    itemTransferBetweenTwoArrays(arrayFrom, arrayTo, nb, proba){
+        var additionString = "";
+        for(let i = 0; i < nb; i++){
+            if (UsefulFunctions.probaFunction(proba) && arrayFrom.length > 0){
+                var randomObjectIndice = UsefulFunctions.getRandomIntInclusive(0, arrayFrom.length-1);
+                var removedItem = arrayFrom.splice(randomObjectIndice, 1)[0];
+                arrayTo.push(removedItem);
+                additionString = additionString + removedItem.name + "\n";
+                
+            } 
+        }   
+        return additionString;
+    }
+}
+
+class Inventory{
     constructor(){
         this.dictionary = new Map([]);
     }
@@ -483,6 +526,13 @@ class City{
         }
         else{
             this.dictionary.set(itemName, nb);
+        }
+    }
+
+    cheat(nb){
+        var iterator1 = this.dictionary.entries();
+        for(let item of iterator1){
+            this.add(item[0], nb)
         }
     }
 
@@ -678,7 +728,9 @@ class UsefulFunctions{
         var numberOfBuildings = listAllBuildings.length;
         for(let i = 0; i < numberOfBuildings; i++){
             var building = listAllBuildings[i];
-            allRessourcesInventory.addInventory(building.ressourcesRequired);
+            for(let j = 0; j < building.maxLevel; j++){
+                allRessourcesInventory.addInventory(building.ressourcesRequired);
+            } 
         }
         return allRessourcesInventory;
     }
@@ -771,7 +823,10 @@ class UsefulFunctions{
         return timeString;
     }
 
-
+    static probaFunction(proba){
+        var rdnb = Math.random();
+        return rdnb < proba;
+    }
 
     static randomBob(){
         var rdnb = Math.random();
@@ -1049,13 +1104,16 @@ listAllBuildings = listBuildings.concat(listBuildingsArchitect);
 
 
 ///////////////////////////////// Buildings End /////////////////////////////////////////
-
+//screw - metal - wood - cement bag - adhesive patch - engine - wire mesh
 //city inventory
 ressources = new Inventory();
 ressources.add("wood", 0);
 ressources.add("metal", 0);
 ressources.add("screw", 0);
-
+ressources.add("cement bag", 0);
+ressources.add("adhesive patch", 0);
+ressources.add("engine", 0);
+ressources.add("wire mesh", 0);
 
 //listSkills
 listSkills = [];

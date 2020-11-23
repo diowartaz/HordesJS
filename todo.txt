@@ -1,4 +1,36 @@
+faire une fontion architectoire pour transferer un batiment radom de BuildingsArchitect a Buildings
+pareil pour library
+
+
+faire qu'on ne puisse pas construire un batiment/upgrade skill au dernier moment
+historque au lieu de pop up
+
+
+
 refaire les alert pour les pop up ( c'est degueux)
+pouvoir faire build au fur et a mesure (sans consommer les ressources)
+inventaire durant les fouille
+voir depuis cb de tremps on est sur le lieu des fouilles
+
+
+
+dans le contructeurs
+ajouter 3 buildings
+ajouter 2 competences
+
+
+overall efficacity
+
+ressources:
+-wood
+-screw
+-metal
+
+-rustine
+-sac de ciment
+-moteur
+-grillage
+
 
 buildings to add:
     classic buildings
