@@ -1,8 +1,13 @@
+faire que n'importe quelle action ne puisse pas depasser la fin de journée
+
+quand une competence / building est lvl max le bouton n apparait plus
+
+memoriser le temps passer sur chaque action
+
+
 bilan avant attaque (action bob / muraille evolutive)
 blian attaque (def / zombie / survie) + bilan matin (decouverte / arrivee bob)
 
-
-faire qu'on ne puisse pas construire un batiment/upgrade skill au dernier moment
 historque au lieu de pop up
 
 

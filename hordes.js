@@ -8,10 +8,10 @@ bricoBob_defense = 5;
 diggingInTheCityProba = 0.5;
 
 //Skills
-ressourcesSaverSkillAdvantage = 0.5;
+ressourcesSaverSkillAdvantage = 0.25;
 fastLearnerSkillAdvantage = 0.5;
 sprinterSkillAdvantage = 0.5;
-diggerSkillAdvantage = 0.5;
+diggerSkillAdvantage = 0.25;
 
 //times
 defaultDiggingTime = one_hour*1;
@@ -54,6 +54,8 @@ class City{
       this.defaultJoiningDiggingZoneTime = defaultJoiningDiggingZoneTime;
       this.napTime = napTime;
       this.diggingInTheCityProba = diggingInTheCityProba;
+
+      this.currentActionDisplay = "building";
     }
 
 
@@ -116,7 +118,7 @@ class City{
 
     onLoadBody(){
         this.update();
-        this.startTime();
+        this.permanentlyUpdating(0);
     }
 
     timeUpdate(){
@@ -145,9 +147,16 @@ class City{
         }
     }
 
-    startTime(){
-        this.addUselessTime(25);//real game speed, les 16h d une journee correspondent environ a 2min
-        setTimeout(function(myCity){myCity.startTime()}, 50, this);
+
+    permanentlyUpdating(ms){
+        var periodMs = 50 //ms
+        var timeAdded = 25 //sec
+        this.addUselessTime(timeAdded);//real game speed, les 16h d une journee correspondent environ a 2min
+        /*if(ms==500){
+            ms = 0;
+            myCity.updateActionDisplay();
+        }*/
+        setTimeout(function(myCity,ms){myCity.permanentlyUpdating(ms);}, periodMs, this, ms+periodMs);//ms+periodMs
     }
 
     dayUpdate(){
@@ -241,7 +250,7 @@ class City{
         this.timeUpdate();
     }
     nbZombieToAdd(){
-        return 5;
+        return UsefulFunctions.getRandomIntInclusive(this.day*2,this.day*4);
     }
 
     midnightAttack(){
@@ -455,14 +464,17 @@ class City{
 
     displayBuildAction(){
         document.getElementById("actionDisplay").innerHTML = this.buildingsActionToHtml();
+        this.currentActionDisplay = "building";
     }
 
     displayUpgradeSkillsAction(){
         document.getElementById("actionDisplay").innerHTML = this.skillsActionToHtml();
+        this.currentActionDisplay = "skill";
     }
 
     displayDiggingAction(){
         document.getElementById("actionDisplay").innerHTML = this.diggingActionToHtml();
+        this.currentActionDisplay = "digging";
     }
     
     build(i){ //index of the building to build
@@ -521,8 +533,20 @@ class City{
     }
 
     youHaveTimeToDothisAction(timeRequired){
-        console.log("this.time + timeRequired < this.day_end_time:   " + this.time + " + " + timeRequired + " < " + this.day_end_time);
+        //console.log("this.time + timeRequired < this.day_end_time:   " + this.time + " + " + timeRequired + " < " + this.day_end_time);
         return this.time + timeRequired < this.day_end_time;
+    }
+
+    updateActionDisplay(){
+        if(this.currentActionDisplay == "building"){
+            this.displayBuildAction();
+        }
+        else if(this.currentActionDisplay == "skill"){
+            this.displayUpgradeSkillsAction();
+        }
+        else if(this.currentActionDisplay == "digging"){
+            this.displayDiggingAction();
+        }
     }
 }
 
@@ -703,14 +727,15 @@ class Building{
             myCity.displayBuildAction();
         }
         else{
-            var alertMessage = "You can't build this building: \n";
+            alert("Not enough time!")
+            /*var alertMessage = "You can't build this building: \n";
             if(this.level >= this.maxLevel){
                 alertMessage += "This building is already reached his maximum level";
             }
             else{
                 alertMessage += "You don't have the ressources required to build it";
-            }
-            alert(alertMessage);
+            }*
+            alert(alertMessage);*/
         }
     }
 
@@ -896,7 +921,7 @@ class UsefulFunctions{
         else{
             button = "<button onclick=\"" + onClickFunction + "\">" + text + "</button>";
         }
-        console.log(button);
+        //console.log(button);
         return button;
     }
 }
@@ -910,7 +935,7 @@ class Skill {
     }
 
     isUpgradable(myCity){
-        return this.level < this.maxLevel && myCity.youHaveTimeToDothisAction(this.timeRequired);
+        return this.level < this.maxLevel && myCity.youHaveTimeToDothisAction(this.getTimeRequired(myCity));
     }
 
     upgrade(myCity){
@@ -1018,7 +1043,7 @@ var noActionFunction = function (myCity){};
 };*/
 
 //palisade (cout=8 ratio=25/8)
-name = "palisade";
+name = "palissade";
 defense = 25;
 maxLevel = 3;
 ressourcesRequired = new Inventory();
@@ -1098,26 +1123,26 @@ timeRequired = one_hour*0.5;
 building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
 listBuildingsArchitect.push(building);
 
-//architect shelter (cout=10)
+//architect shelter (cout=9)
 name = "architect shelter";
 defense = 0;
 maxLevel = 1;
 ressourcesRequired = new Inventory();
 ressourcesRequired.add("metal", 2);
-ressourcesRequired.add("wood", 2);
+ressourcesRequired.add("wood", 1);
 ressourcesRequired.add("screw", 2);
 timeRequired = one_hour*4;
 building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
 listBuildings.push(building);
 
-//quiet place (cout=10)
+//quiet place (cout=8.5)
 name = "quiet place";
 defense = 0;
 maxLevel = 1;
 ressourcesRequired = new Inventory();
 ressourcesRequired.add("cement bag", 2);
 ressourcesRequired.add("wood", 2);
-ressourcesRequired.add("screw", 2);
+ressourcesRequired.add("screw", 1);
 timeRequired = one_hour*3.5;
 building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, noActionFunction);
 listBuildings.push(building);
@@ -1136,7 +1161,7 @@ var actionFunction = function (myCity){
     myCity.upgradeCozyHouse();
 };
 building = new Building(name, defense, maxLevel, ressourcesRequired, timeRequired, actionFunction);
-listBuildings.push(building);
+listBuildingsArchitect.push(building);
 
 
 
@@ -1163,19 +1188,19 @@ listSkillsLibrary = []
 
 name = "digger";
 maxLevel = 5;
-timeRequired = 4*3600;
+timeRequired = 5*3600;
 diggerSkill = new Skill(name, maxLevel, timeRequired);
 listSkillsLibrary.push(diggerSkill);
 
 name = "builder";
-maxLevel = 5;
-timeRequired = 4*3600;
+maxLevel = 10;
+timeRequired = 3*3600;
 builderSkill = new Skill(name, maxLevel, timeRequired);
 listSkillsLibrary.push(builderSkill);
 
 name = "ressources saver";
 maxLevel = 5;
-timeRequired = 4*3600;
+timeRequired = 6*3600;
 SaverSkill = new Skill(name, maxLevel, timeRequired);
 listSkillsLibrary.push(SaverSkill);
 
@@ -1187,7 +1212,7 @@ listSkillsLibrary.push(FastLearnerSkill);
 
 name = "sprinter";
 maxLevel = 5;
-timeRequired = 4*3600;
+timeRequired = 2*3600;
 sprinterSkill = new Skill(name, maxLevel, timeRequired);
 listSkillsLibrary.push(sprinterSkill);
 
