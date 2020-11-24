@@ -1,5 +1,5 @@
-faire une fontion architectoire pour transferer un batiment radom de BuildingsArchitect a Buildings
-pareil pour library
+bilan avant attaque (action bob / muraille evolutive)
+blian attaque (def / zombie / survie) + bilan matin (decouverte / arrivee bob)
 
 
 faire qu'on ne puisse pas construire un batiment/upgrade skill au dernier moment
@@ -14,22 +14,15 @@ voir depuis cb de tremps on est sur le lieu des fouilles
 
 
 
-dans le contructeurs
-ajouter 3 buildings
-ajouter 2 competences
-
-
+efficacity > 100?
 overall efficacity
 
-ressources:
--wood
--screw
--metal
+equilibrer les competences
 
--rustine
--sac de ciment
--moteur
--grillage
+
+batiment qui fait qu on peut commencer une action qui depasse l'heure limite
+enlver le boulet bob pour l instant
+
 
 
 buildings to add:
@@ -49,17 +42,15 @@ buildings to add:
 
 
     special buildings
-        support def
+        support def ------------
         phare
         ecole
-        muraille evolutive
-        architectoire
+        muraille evolutive---------------
+        
         batiment de production pour chaque ressources
         velo augmente la proba des fouilles car on peut aller plus loin de le desert
         charette (plus d objets)
         manufacture
-        librairie
-        maison confortable(5-23h)
 
 
 faire mourir les bobs

@@ -5,6 +5,7 @@ one_hour = 3600; //seconds
 day_start_time = one_hour*6; //the day begins at 6am
 day_end_time = one_hour*22; //the day ends at 10pm
 bricoBob_defense = 5;
+diggingInTheCityProba = 0.5;
 
 //Skills
 ressourcesSaverSkillAdvantage = 0.5;
@@ -52,6 +53,7 @@ class City{
       this.defaultDiggingTime = defaultDiggingTime;
       this.defaultJoiningDiggingZoneTime = defaultJoiningDiggingZoneTime;
       this.napTime = napTime;
+      this.diggingInTheCityProba = diggingInTheCityProba;
     }
 
 
@@ -100,17 +102,16 @@ class City{
     }
 
     findAnItem(){
+        var anItemHasBeenFound = true;
         if(this.locationCity){
+            anItemHasBeenFound = UsefulFunctions.probaFunction(this.diggingInTheCityProba);
+        }
+        if(anItemHasBeenFound){
             var itemName = UsefulFunctions.randomItem();
             this.addItem(itemName, 1);
-            this.addTime(this.getTimeRequiredDigging());
         }
-        else{
-            var itemName = UsefulFunctions.randomItem();
-            this.addItem(itemName, 1);
-            this.addTime(this.getTimeRequiredDigging());
-        }
-        
+        this.addTime(this.getTimeRequiredDigging());     
+        myCity.displayDiggingAction();  
     }
 
     onLoadBody(){
@@ -199,7 +200,7 @@ class City{
         this.defenseUpdate();
         this.inventoryUpdate();
         this.bobsUpdate();
-        this.displayUpgradeSkillsAction();
+        this.displayBuildAction();
         UsefulFunctions.showHideDevFunctions();
 
     }
@@ -274,6 +275,7 @@ class City{
             alert("A new bob arrived in your city: " + this.bobs[bobNumber].name)
             this.midnightDiscoveryArchitect(1, 1, true);
             this.midnightDiscoveryLibrary(1, 1, true);
+            this.displayBuildAction();
         }
         else{//night in the desert
             alert("You haven't survived.\nWho thought that spending a night in the desert full of zombies was dangerous?\nWhat a mistake!\nYou survived the first " + this.day + " day(s).");
@@ -310,9 +312,7 @@ class City{
             htmlString += "<th>" + building.maxLevel + "<th>";
             htmlString += "<th>" + building.ressourcesRequired.toString() + "<th>";
             htmlString += "<th>" + UsefulFunctions.timeToString(building.getTimeRequired(this)) + "<th>";
-            if(building.isBuildable(this)){
-                htmlString += "<th><button onclick=\"myCity.build(" + i + ")\">+</button><th>";
-            }
+            htmlString += "<th>" + UsefulFunctions.buttonConstructor("+", "myCity.build(" + i + ")", !building.isBuildable(this)) + "<th>";
             htmlString += "</tr>";
         }
         htmlString = htmlString + "</table>";
@@ -339,9 +339,7 @@ class City{
             htmlString += "<th>" + skill.level + "<th>";
             htmlString += "<th>" + skill.maxLevel + "<th>";
             htmlString += "<th>" + UsefulFunctions.timeToString(skill.getTimeRequired(this)) + "<th>";
-            if(skill.isUpgradable(this)){
-                htmlString += "<th><button onclick=\"myCity.upgradeSkill(" + i + ")\">+</button><th>";
-            }
+            htmlString += "<th>" + UsefulFunctions.buttonConstructor("+", "myCity.upgradeSkill(" + i + ")", !skill.isUpgradable(this)) + "<th>";
             htmlString += "</tr>";
         }
         htmlString = htmlString + "</table>";
@@ -349,19 +347,20 @@ class City{
     }
 
     diggingActionToHtml(){
+        //youHaveTimeToDothisAction(timeRequired)
         if(this.locationCity){
             var htmlString = "<table>";
 
             htmlString += "<tr>";
             htmlString = htmlString + "<th>Join digging zone in the desert<th>"
             htmlString += "<th>" + UsefulFunctions.timeToString(this.getTimeRequiredJoiningDiggingZone(this)) + "<th>";
-            htmlString += "<th><button onclick=\"myCity.changeLocation()\">+</button><th>";
+            htmlString += "<th>" + UsefulFunctions.buttonConstructor("+", "myCity.changeLocation()", !this.youHaveTimeToDothisAction(this.getTimeRequiredJoiningDiggingZone(this))) + "<th>";
             htmlString += "</tr>";
 
             htmlString += "<tr>";
             htmlString = htmlString + "<th>Dig for an item in the city<th>"
             htmlString += "<th>" + UsefulFunctions.timeToString(this.getTimeRequiredDigging(this)) + "<th>";
-            htmlString += "<th><button onclick=\"myCity.findAnItem()\">+</button><th>";
+            htmlString += "<th>" + UsefulFunctions.buttonConstructor("+", "myCity.findAnItem()", !this.youHaveTimeToDothisAction(this.getTimeRequiredDigging(this))) + "<th>";
             htmlString += "</tr>";
 
             htmlString = htmlString + "</table>";
@@ -372,13 +371,13 @@ class City{
             htmlString += "<tr>";
             htmlString = htmlString + "<th>Return to the city<th>"
             htmlString += "<th>" + UsefulFunctions.timeToString(this.getTimeRequiredJoiningDiggingZone(this)) + "<th>";
-            htmlString += "<th><button onclick=\"myCity.changeLocation()\">+</button><th>";
+            htmlString += "<th>" + UsefulFunctions.buttonConstructor("+", "myCity.changeLocation()", !this.youHaveTimeToDothisAction(this.getTimeRequiredJoiningDiggingZone(this))) + "<th>";
             htmlString += "</tr>";
 
             htmlString += "<tr>";
             htmlString = htmlString + "<th>Dig for an item<th>"
             htmlString += "<th>" + UsefulFunctions.timeToString(this.getTimeRequiredDigging(this)) + "<th>";
-            htmlString += "<th><button onclick=\"myCity.findAnItem()\">+</button><th>";
+            htmlString += "<th>" + UsefulFunctions.buttonConstructor("+", "myCity.findAnItem()", !this.youHaveTimeToDothisAction(this.getTimeRequiredDigging(this))) + "<th>";
             htmlString += "</tr>";
 
             htmlString = htmlString + "</table>";
@@ -413,7 +412,6 @@ class City{
             var actionButtons = document.getElementsByClassName("actionButton");
             for(let i = 0; i < actionButtons.length; i++){
                 actionButtons[i].disabled = true;
-                actionButtons[i].style.background = "rgba(163, 10, 10, 0.4)";
             }
         }
     }
@@ -520,6 +518,11 @@ class City{
     upgradeCozyHouse(){
         this.day_start_time = this.day_start_time - one_hour*0.5;
         this.day_end_time = this.day_end_time + one_hour*0.5;
+    }
+
+    youHaveTimeToDothisAction(timeRequired){
+        console.log("this.time + timeRequired < this.day_end_time:   " + this.time + " + " + timeRequired + " < " + this.day_end_time);
+        return this.time + timeRequired < this.day_end_time;
     }
 }
 
@@ -712,7 +715,7 @@ class Building{
     }
 
     isBuildable(myCity){
-        return myCity.inventory.contains(this.ressourcesRequired) && this.level < this.maxLevel;
+        return myCity.inventory.contains(this.ressourcesRequired) && this.level < this.maxLevel && myCity.youHaveTimeToDothisAction(this.timeRequired);
     }
 
     toString(){
@@ -884,6 +887,18 @@ class UsefulFunctions{
     static trunc100(floatNumber){
         return Math.trunc(floatNumber*100)/100;
     }
+
+    static buttonConstructor(text, onClickFunction, disabled){
+        var button;
+        if(disabled){
+            button = "<button disabled onclick=\"" + onClickFunction + "\">" + text + "</button>";
+        }
+        else{
+            button = "<button onclick=\"" + onClickFunction + "\">" + text + "</button>";
+        }
+        console.log(button);
+        return button;
+    }
 }
 
 class Skill {
@@ -894,8 +909,8 @@ class Skill {
         this.timeRequired = timeRequired;
     }
 
-    isUpgradable(){
-        return this.level < this.maxLevel;
+    isUpgradable(myCity){
+        return this.level < this.maxLevel && myCity.youHaveTimeToDothisAction(this.timeRequired);
     }
 
     upgrade(myCity){

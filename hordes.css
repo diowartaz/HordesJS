@@ -44,3 +44,7 @@ body{
 h1{
     font-size: 20px;
 }
+
+button:disabled{
+    background-color: rgba(163, 10, 10, 0.4);
+}
