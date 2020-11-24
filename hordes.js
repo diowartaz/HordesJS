@@ -56,6 +56,7 @@ class City{
       this.diggingInTheCityProba = diggingInTheCityProba;
 
       this.currentActionDisplay = "building";
+      this.cumulEfficacity = 0;
     }
 
 
@@ -254,37 +255,44 @@ class City{
     }
 
     midnightAttack(){
-        //bob actions
+        var nightSummaryString = "Past Night Summary:\n\n";
         if(this.locationCity){
+            //bob actions
             var stringActionBobs = "Bob actions during the day:\n";
             for(let i = 0; i < this.bobs.length; i++){
                 var stringActionResult = this.bobs[i].action(this);
                 stringActionBobs += stringActionResult + "\n"
             }
-            alert(stringActionBobs)
+            nightSummaryString += stringActionBobs + "\n";
 
-            var efficacity = Math.trunc((this.effectiveTime / (this.day_end_time - this.day_start_time))*100)
-            alert("The attack is happening! \ndefense = " + this.defense + "\nnbZombie = " + this.nbZombie + "\nday efficacity = " + efficacity + "%");
-            if(this.nbZombie > this.defense){
-                alert("You haven't survived... \nYour score: day " + this.day);
+            var efficacity = Math.trunc((this.effectiveTime / (this.day_end_time - this.day_start_time))*100);
+            this.cumulEfficacity += efficacity;
+            nightSummaryString = nightSummaryString + "Today Efficacity: " + efficacity + "%\n";
+            nightSummaryString = nightSummaryString + "Defense: " + this.defense + "\n";
+            nightSummaryString = nightSummaryString + "NbZombie: " + this.nbZombie + "\n\n";
+
+            if(this.nbZombie > this.defense){//game over
+                nightSummaryString = nightSummaryString + "You didn't survived...\n";
+                nightSummaryString = nightSummaryString + "Your score: day " + this.day+ "\n";
+                var overallEfficacity = Math.trunc(this.cumulEfficacity / this.day);
+                nightSummaryString = nightSummaryString + "Overall efficacity: " + overallEfficacity + "%\n";
+                alert(nightSummaryString);
                 window.location.href="gameLostHordes.html";
             }
-            else{
-                alert("You survived");
-            }
-            //Updates for the next day
-            this.addDay(1);
-            this.resetTime();
-            var nbZombieToAdd = this.nbZombieToAdd();
-            this.addZombie(nbZombieToAdd);
+            else{//You survived the night
+                //Updates for the next day
+                this.addDay(1);
+                this.resetTime();
+                this.addZombie(this.nbZombieToAdd());
 
-            var bobNumber = UsefulFunctions.getRandomIntInclusive(0,2);
-            this.bobs[bobNumber].add(1);
-            this.bobsUpdate();
-            alert("A new bob arrived in your city: " + this.bobs[bobNumber].name)
-            this.midnightDiscoveryArchitect(1, 1, true);
-            this.midnightDiscoveryLibrary(1, 1, true);
-            this.displayBuildAction();
+                nightSummaryString = nightSummaryString + "You survived!\n\n";
+                nightSummaryString += this.midnightDiscoveryArchitect(1, 1) + "\n";
+                nightSummaryString += this.midnightDiscoveryLibrary(1, 1) + "\n";
+                nightSummaryString += this.midnightBobArrival(1, 1);
+
+                alert(nightSummaryString);
+                this.displayBuildAction();
+            }
         }
         else{//night in the desert
             alert("You haven't survived.\nWho thought that spending a night in the desert full of zombies was dangerous?\nWhat a mistake!\nYou survived the first " + this.day + " day(s).");
@@ -487,31 +495,44 @@ class City{
         myCity.bobsUpdate();
     }
 
-    midnightDiscoveryArchitect(nb, proba, alertYes){
+    midnightDiscoveryArchitect(nb, proba){
         if(UsefulFunctions.searchObjetInArray("architect shelter", this.buildings, []).level == 1){
-            this.discoveryArchitect(nb, proba, alertYes);
+            var varReturn = "" + this.discoveryArchitect(nb, proba);
+            return varReturn;
+        }
+        else{
+            return "";
         }
     }
-    midnightDiscoveryLibrary(nb, proba, alertYes){
+    midnightDiscoveryLibrary(nb, proba){
         if(UsefulFunctions.searchObjetInArray("quiet place", this.buildings, []).level == 1){
-            this.discoveryLibrary(nb, proba, alertYes);
+            return "" + this.discoveryLibrary(nb, proba);
+        }
+        else{
+            return "";
         }
     }
 
-    discoveryArchitect(nb, proba, alertYes){
-
+    discoveryArchitect(nb, proba){
         var additionString = this.itemTransferBetweenTwoArrays(this.buildingsArchitect, this.buildings, nb, proba)
-        if(alertYes){
-            alert("You are a genius! You manage to create a blueprint which can be really usefull for the defenses\n" + additionString);
+        if(additionString != ""){
+            return "You are a genius! You manage to create a blueprint which can be really usefull for the defenses:\n" + additionString;
+        }
+        else{
+            return additionString;
         }
     }
 
-    discoveryLibrary(nb, proba, alertYes){
+    discoveryLibrary(nb, proba){
         var additionString = this.itemTransferBetweenTwoArrays(this.skillsLibrary, this.skills, nb, proba)
-        if(alertYes){
-            alert("You discovered some books with which you could learn some new usefull skills!\n" + additionString);
+        if(additionString != ""){
+            return "You discovered some books with which you could learn some new usefull skills!\n" + additionString;
+        }
+        else{
+            return additionString;
         }
     }
+
 
     itemTransferBetweenTwoArrays(arrayFrom, arrayTo, nb, proba){
         var additionString = "";
@@ -520,7 +541,7 @@ class City{
                 var randomObjectIndice = UsefulFunctions.getRandomIntInclusive(0, arrayFrom.length-1);
                 var removedItem = arrayFrom.splice(randomObjectIndice, 1)[0];
                 arrayTo.push(removedItem);
-                additionString = additionString + removedItem.name + "\n";
+                additionString = additionString + " - " + removedItem.name + "\n";
                 
             } 
         }   
@@ -533,7 +554,6 @@ class City{
     }
 
     youHaveTimeToDothisAction(timeRequired){
-        //console.log("this.time + timeRequired < this.day_end_time:   " + this.time + " + " + timeRequired + " < " + this.day_end_time);
         return this.time + timeRequired < this.day_end_time;
     }
 
@@ -547,6 +567,12 @@ class City{
         else if(this.currentActionDisplay == "digging"){
             this.displayDiggingAction();
         }
+    }
+    midnightBobArrival(nb, proba){
+        var bobNumber = UsefulFunctions.getRandomIntInclusive(0,2);
+        this.bobs[bobNumber].add(1);
+        this.bobsUpdate();
+        return "A new bob arrived in your city:\n - " + this.bobs[bobNumber].name +"\n";
     }
 }
 
@@ -921,7 +947,6 @@ class UsefulFunctions{
         else{
             button = "<button onclick=\"" + onClickFunction + "\">" + text + "</button>";
         }
-        //console.log(button);
         return button;
     }
 }

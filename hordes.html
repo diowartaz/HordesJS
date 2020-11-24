@@ -6,6 +6,7 @@
         <script src="hordes.js"></script>
     </head>
     <body onload="myCity.onLoadBody()">
+        <button onclick="UsefulFunctions.showHideDevFunctions()">SHOW/HIDE DEV FUNCTIONS</button>
         <div class="Block" id="generalInformationDiv">
             <h1>Day <span id="day"></span></h1>
             <p id="timeDisplay"><span class="attentionTime"></span>Time: <span id="time"></span><span class="attentionTime"></span></p>
@@ -18,7 +19,7 @@
                 <li><button class="actionButton" onclick="myCity.displayBuildAction()">BUILD DEFENSES</button></li>
                 <li><button class="actionButton" onclick="myCity.displayUpgradeSkillsAction()">UPGRADE YOUR SKILLS</button></li>
                 <li><button class="actionButton" onclick="myCity.displayDiggingAction()">SEARCH FOR RESSOUCES</button></li>
-                <li><button class="actionButton" onclick="myCity.midnightAttack()">WAIT FOR THE ATTACK</button></li>
+                
 
                 <li><button class="devFunction" onclick="myCity.bobArrival()">A BOB ARRIVES IN THE CITY (dev function)</button></li>
                 <li><button class="devFunction" onclick="myCity.takeANap()">TAKE A NAP (dev function)</button></li>
@@ -27,6 +28,7 @@
                 <li><button class="devFunction" onclick="myCity.resetInventory()">RESET INVENTORY (dev function)</button></li>
                 <li><button class="devFunction" onclick="myCity.resetBobs()">RESET BOBS (dev function)</button></li>  
                 <li><button class="devFunction" onclick="myCity.addZombie(10)">ADD 10 ZOMBIES (dev function)</button></li>
+                <li><button class="devFunction" onclick="myCity.midnightAttack()">WAIT FOR THE ATTACK</button></li>
             </ul>
         </div>
 
@@ -44,6 +46,5 @@
             <h1>Bobs</h1>
             <p id="bobs"></p>
         </div>
-        <button onclick="UsefulFunctions.showHideDevFunctions()">SHOW/HIDE DEV FUNCTIONS</button>
     </body>
 </html>
