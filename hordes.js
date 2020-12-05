@@ -1058,8 +1058,8 @@ class StupidBob extends Bob{
 ///////////////////////////////// Buildings /////////////////////////////////////////
 // screw - metal - wood - cement bag - adhesive patch - engine - wire mesh
 
-listBuildings = []
-listBuildingsArchitect = []
+listBuildings = [];
+listBuildingsArchitect = [];
 var noActionFunction = function (myCity){};
 
 /*var actionFunction = function (myCity){
@@ -1209,7 +1209,7 @@ ressources.add("wire mesh", 0);
 
 //listSkills
 listSkills = [];
-listSkillsLibrary = []
+listSkillsLibrary = [];
 
 name = "digger";
 maxLevel = 5;
@@ -1245,9 +1245,9 @@ listAllSkills = listSkillsLibrary.concat(listSkills);
 
 
 listBobs = [];
-listBobs.push(new DiggerBob(0))
-listBobs.push(new BricoBob(0))
-listBobs.push(new StupidBob(0))
+listBobs.push(new DiggerBob(0));
+listBobs.push(new BricoBob(0));
+listBobs.push(new StupidBob(0));
 
 var hidden = false;
 var myCity = new City();

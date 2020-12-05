@@ -1,16 +1,22 @@
-faire que n'importe quelle action ne puisse pas depasser la fin de journée
+une fois un menu ouvert, on peut faire l action
 
 quand une competence / building est lvl max le bouton n apparait plus
 
 memoriser le temps passer sur chaque action
 
+refresh la page en permanance ou autoriser la contruction si on est dans le menu
 
-bilan avant attaque (action bob / muraille evolutive)
-blian attaque (def / zombie / survie) + bilan matin (decouverte / arrivee bob)
+faire que les trucs soit calciler une fois, pour le finditem par exemple
+
+fast learner qui s update qui diminue son propre temps d apretissage
+
+change de mourir des bob pour qu en moyenne il y est 10 bobs de chaque
+
+
 
 historque au lieu de pop up
 
-
+faire des batiments tres couteux soit en ressources soit en temps pour combiener avec un skills en debut de partie
 
 refaire les alert pour les pop up ( c'est degueux)
 pouvoir faire build au fur et a mesure (sans consommer les ressources)
